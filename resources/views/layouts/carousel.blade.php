@@ -10,43 +10,43 @@
     <div class="carousel-inner">
         <div class="carousel-item active">
             <img class="bd-placeholder-img"
-                 src="{{ URL::to('img/carousel/carousel_0.png') }}" alt="Blog da Dentista Manu" width="100%" height="100%" focusable="false"/>
+                 src="{{ URL::to('img/carousel/carousel_00.png') }}" alt="Modelo_01" width="100%" height="100%" focusable="false"/>
 
-{{--            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"--}}
-{{--                aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">--}}
-{{--                <rect width="100%" height="100%" fill="var(--bs-secondary-color)" />--}}
-{{--            </svg>--}}
-{{--            <div class="container">--}}
-{{--                <div class="carousel-caption text-start">--}}
-{{--                    <h1>Jonathan</h1>--}}
-{{--                    <p class="opacity-75">Some representative placeholder content for the first slide of the--}}
-{{--                        carousel.</p>--}}
-{{--                    <p><a class="btn btn-lg btn-primary" href="#">Sign up today</a></p>--}}
-{{--                </div>--}}
-{{--            </div>--}}
+            {{--            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"--}}
+            {{--                aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">--}}
+            {{--                <rect width="100%" height="100%" fill="var(--bs-secondary-color)" />--}}
+            {{--            </svg>--}}
+            {{--            <div class="container">--}}
+            {{--                <div class="carousel-caption text-start">--}}
+            {{--                    <h1>Jonathan</h1>--}}
+            {{--                    <p class="opacity-75">Some representative placeholder content for the first slide of the--}}
+            {{--                        carousel.</p>--}}
+            {{--                    <p><a class="btn btn-lg btn-primary" href="#">Sign up today</a></p>--}}
+            {{--                </div>--}}
+            {{--            </div>--}}
         </div>
         <div class="carousel-item">
             <img class="bd-placeholder-img"
-                 src="{{ URL::to('img/carousel/carousel_2.png') }}" alt="Saúde Bocal da Dentista Manu" width="100%" height="100%" focusable="false"/>
-{{--            <div class="container">--}}
-{{--                <div class="carousel-caption">--}}
-{{--                    <h1>Another example headline.</h1>--}}
-{{--                    <p>Some representative placeholder content for the second slide of the carousel.</p>--}}
-{{--                    <p><a class="btn btn-lg btn-primary" href="#">Learn more</a></p>--}}
-{{--                </div>--}}
-{{--            </div>--}}
+                 src="{{ URL::to('img/carousel/carousel_11.png') }}" alt="Modelo_2" width="100%" height="100%" focusable="false"/>
+            {{--            <div class="container">--}}
+            {{--                <div class="carousel-caption">--}}
+            {{--                    <h1>Another example headline.</h1>--}}
+            {{--                    <p>Some representative placeholder content for the second slide of the carousel.</p>--}}
+            {{--                    <p><a class="btn btn-lg btn-primary" href="#">Learn more</a></p>--}}
+            {{--                </div>--}}
+            {{--            </div>--}}
         </div>
-        <div class="carousel-item">
+        {{-- <div class="carousel-item">
             <img class="bd-placeholder-img"
                  src="{{ URL::to('img/carousel/carousel_3.jpeg') }}" alt="Dentista Manu" width="100%" height="100%" focusable="false"/>
-{{--            <div class="container">--}}
-{{--                <div class="carousel-caption text-end">--}}
-{{--                    <h1>One more for good measure.</h1>--}}
-{{--                    <p>Some representative placeholder content for the third slide of this carousel.</p>--}}
-{{--                    <p><a class="btn btn-lg btn-primary" href="#">Browse gallery</a></p>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-        </div>
+        {{--            <div class="container">--}}
+        {{--                <div class="carousel-caption text-end">--}}
+        {{--                    <h1>One more for good measure.</h1>--}}
+        {{--                    <p>Some representative placeholder content for the third slide of this carousel.</p>--}}
+        {{--                    <p><a class="btn btn-lg btn-primary" href="#">Browse gallery</a></p>--}}
+        {{--                </div>--}}
+        {{--            </div>--}}
+        {{-- </div> --}}
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>

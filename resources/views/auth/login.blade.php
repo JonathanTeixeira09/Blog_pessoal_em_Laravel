@@ -7,7 +7,7 @@
     <meta name="author" content="Jonathan">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="icon" href="{{ URL::to('img/manu.ico') }}">
+    {{-- <link rel="icon" href="{{ URL::to('img/manu.ico') }}"> --}}
     <title> @yield('title')</title>
 
     <link rel="stylesheet" type="text/css" href="{{ URL::to('css/bootstrap.min.css') }}">
@@ -74,7 +74,7 @@
             </div>
         </div>
         <button class="btn btn-primary w-100 py-2" type="submit">Logar</button>
-        <p class="mb-3 text-muted"><center> &copy; 2024 - Blog da Drª Manu</center></p>
+        <p class="mb-3 text-muted"><center> &copy; 2024 - Blog Diário de uma Modelo</center></p>
 
     </form>
 </main>

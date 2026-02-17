@@ -7,7 +7,7 @@
     <meta name="author" content="Jonathan">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="icon" href="{{ URL::to('img/manu.ico') }}">
+    {{-- <link rel="icon" href="{{ URL::to('img/manu.ico') }}"> --}}
     <title> @yield('title')</title>
 
     <!-- CSS das do tinyMCE -->
