@@ -5,53 +5,85 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 
 class CommentController extends Controller
 {
     public function store(Request $request, Post $post)
     {
         $validated = $request->validate([
-            'email' => 'required|email',
-            'name' => 'required',
-            'content' => 'required'
-        ], [
-            'email.required' => 'Esse campo de email é obrigatório para que possamos entrar em contato com você, ele não ficará visível para as pessoas',
-            'name.required' => 'O campo Nome é obrigatório',
-            'content.required' => 'Seu comentário é de grande valia para mim.'
-        ]);
+        'email' => 'required|email',
+        'name' => [
+            'required',
+            'regex:/^[A-Za-zÀ-ú\s]+$/u',
+            'max:255'
+        ],
+        'content' => 'required|string|max:5000'
+    ], [
+        'email.required' => 'O campo de email é obrigatório.',
+        'name.required' => 'O campo Nome é obrigatório.',
+        'name.regex' => 'O nome contém caracteres inválidos.',
+        'content.required' => 'O campo de comentário é obrigatório.',
+    ]);
 
+    $content = trim($request->input('content'));
 
-        // Se o usuário estiver logado, pegar os dados do usuário
-        if (auth()->check()) {
-            $user = auth()->user();
-            $created = [
-                'user_id' => $user->id,
-                'post_id' => $post->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'content' => $request->input('content'),
-            ];
-//            dd($created);
-        } else {
-            $created = [
-                'post_id' => $post->id,
-                'name'=> $request->input('name'),
-                'email' => $request->input('email'),
-                'content' => $request->input('content')
+    // 1. Bloquear conteúdo malicioso
+    $maliciousPatterns = [
+        '/(&&|\|\||;|\$\(.*\)|`.*`)/', // comandos shell
+        '/(&amp;|&lt;|&gt;|&quot;|&#039;)/i', // entidades HTML usadas para burlar
+        '/(curl|wget|nslookup|response\.write|echo\s|powershell|cmd\.exe)/i', // comandos perigosos
+        '/(<script|<\/script>|onerror|onload|alert\(|eval\()/i', // XSS
+    ];
 
-            ];
-
+    foreach ($maliciousPatterns as $pattern) {
+        if (preg_match($pattern, $content)) {
+            // return back()->with('error_created_comment', 'Comentário bloqueado por conter conteúdo suspeito.');
+            flash()->error('Comentário bloqueado por conter conteúdo suspeito.');
+            return redirect()->back();
         }
+    }
 
-        // Salvar o comentário no banco de dados
-        Comment::create($created);
+    // 2. Limitar a frequência (máximo 5 comentários por IP em 10 minutos)
+    $ip = $request->ip();
+    $key = 'comment-limit:' . $ip;
 
-        if($created){
-            flash('Comentário enviado com sucesso')->success();
-            return back();
-        }
+    if (RateLimiter::tooManyAttempts($key, 5)) {
+        flash()->error('Você enviou muitos comentários em pouco tempo. Tente novamente mais tarde.');
+            return redirect()->back();
+    }
 
-        return back()->with('error_created_comment','Ocorreu um erro ao cadastrar comentário, tente novamente em alguns segundos.');
+    RateLimiter::hit($key, now()->addMinutes(10)); // cada tentativa conta por 10 minutos
+
+    // 3. Sanitização final
+    $content = strip_tags($content);
+    $content = htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
+
+    $name = strip_tags(trim($request->input('name')));
+
+    $created = [
+        'post_id' => $post->id,
+        'name' => $name,
+        'email' => $request->input('email'),
+        'content' => $content,
+        'ip_address' => $ip,
+    ];
+
+    if (auth()->check()) {
+        $created['user_id'] = auth()->id();
+        $created['name'] = auth()->user()->name;
+        $created['email'] = auth()->user()->email;
+    }
+
+    Comment::create($created);
+
+    if($created){
+        flash('Comentário enviado com sucesso')->success();
+        return back();
+    }
+
+    flash()->error('Ocorreu um erro ao cadastrar comentário, tente novamente em alguns segundos.');
+        return redirect()->back();
 
     }
 
