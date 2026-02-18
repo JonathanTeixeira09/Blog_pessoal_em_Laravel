@@ -7,101 +7,95 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
+
     public function created(){
         return view('posts.formPost', ['title' => 'Publicar Post']);
     }
 
     public function show(Post $post){
-//        Contador das vizualizações dos posts
+        // Contador de visualizações
         $post->increment('views_count');
-        return view('posts.post', ['post' => $post, 'title' => $post->slug]);
+
+        return view('posts.post', [
+            'post' => $post,
+            'title' => $post->title, // Title cadastrado
+        ]);
+
     }
 
-    public function store(Request $request){
-
-//        $validated = $request->validate([
-//            'title' => 'required|max:150',
-//            'thumbnail' => 'required|image',
-//            'imagePost' => 'nullable|image',
-//            'linkVideo' => 'nullable|url',
-////            'content' => 'required',
-//        ],[
-//            'title.required' => 'Esse campo Titulo é obrigatório',
-//            'content.min' => 'Ops! Precisa informar pelo menos 3 caracteres no campo do post',
-//            'thumbnail.required' => 'Ops! Precisa informar uma imagem para a capa do seu post',
-//            'linkVideo.url' => 'O campo do link do vídeo deve ser um URL válido.'
-////            'content.required' => 'Ops! Precisa colocar uma descrição no post'
-//
-//        ]);
-
+    public function store(Request $request)
+    {
         $validated = $request->validate([
             'title' => [
                 'required',
                 'max:150',
-                // Usando expressão regular para permitir apenas letras, números e espaços
-                'regex:/^[A-Za-z0-9\s]+$/',
+                // Permite letras com acento (unicode), números, espaços e pontuação básica
+                'regex:/^[\pL\pN\s\.\,\!\?\:\;\-\'\"\(\)]+$/u',
             ],
-            'thumbnail' => 'required|image',
-            'imagePost' => 'nullable|image',
+            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'imagePost' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'uploadArquivo' => 'nullable|file',
             'linkVideo' => 'nullable|url',
+            'content' => 'nullable|string',
         ], [
             'title.required' => 'Este campo título é obrigatório',
-            'title.regex' => 'O título só pode conter letras, números e espaços',
+            'title.regex' => 'O título contém caracteres inválidos',
             'thumbnail.required' => 'Ops! Precisa informar uma imagem para a capa do seu post',
             'linkVideo.url' => 'O campo do link do vídeo deve ser um URL válido.'
         ]);
 
+        // Upload thumbnail
         if ($request->hasFile('thumbnail') && $request->file('thumbnail')->isValid()) {
-            // Se uma imagem foi enviada e é válida, salve-a no diretório public/posts/tumb
             $fileNameThumbnail = $request->file('thumbnail')->store('posts/tumb', 'public');
         } else {
-            // Se nenhuma imagem foi enviada ou se houver algum erro, use uma imagem padrão do sistema
             $fileNameThumbnail = 'nothumbnail.jpg';
         }
 
-
+        // Upload imagePost
         if ($request->hasFile('imagePost') && $request->file('imagePost')->isValid()) {
-            // Se uma imagem foi enviada e é válida, salve-a no diretório public/posts/post
             $fileNameImage = $request->file('imagePost')->store('posts/post', 'public');
         } else {
-            // Se nenhuma imagem foi enviada ou se houver algum erro, use uma imagem padrão do sistema
             $fileNameImage = 'noimage.jpg';
         }
 
+        // Upload arquivo
         if ($request->hasFile('uploadArquivo') && $request->file('uploadArquivo')->isValid()) {
-            // Se uma imagem foi enviada e é válida, salve-a no diretório public/uploads
             $fileNameUploadArquivos = $request->file('uploadArquivo')->store('uploads', 'public');
         } else {
-                // Se nenhuma imagem foi enviada ou se houver algum erro, NULL
-            $fileNameUploadArquivos = 'NULL';
-            }
-
-
-        //$dataAtual = Carbon::now()->toDateString();
+            $fileNameUploadArquivos = null; // ✅ correto (não usar 'NULL')
+        }
 
         $userId = Auth::id();
-        $title = $request->input('title');
+        $title  = $validated['title'];
+
+        // ✅ Geração de slug automática e única
+        $baseSlug = Str::slug($title);
+        $slug = $baseSlug;
+        $counter = 2;
+
+        while (Post::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
 
         $post = new Post();
-
         $post->user_id = $userId;
         $post->title = $title;
-        $post->slug = $title;
+        $post->slug = $slug; // slug de verdade
         $post->content = $request->input('content');
         $post->thumbnail = $fileNameThumbnail;
         $post->linkVideo = $request->input('linkVideo');
         $post->imagePost = $fileNameImage;
         $post->uploadArquivo = $fileNameUploadArquivos;
 
-
         $post->save();
 
         flash('Post cadastrado com sucesso')->success();
         return redirect()->route('formpost');
-
     }
 
     public function allPosts(){

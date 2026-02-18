@@ -30,7 +30,7 @@
             <div class="col-md-12 ">
                 <img src="{{ URL::to("storage/{$post->user->thumbnail}") }}" alt="{{$post->user->name}}" class="rounded-circle me-2" style="width: 50px; height: 50px;">
                 <span class="text-muted"><strong>Autor: </strong>{{$post->user->name}}</span>
-                <span class="text-muted"><strong>Data:</strong> {{ $post->created_at->format('d \d\e F \d\e Y') }}</span>
+                <span class="text-muted"><strong> Data: </strong> {{ $post->created_at->translatedFormat('d \d\e F \d\e Y') }}</span>
                 <br>
             </div>
         </div>
@@ -48,10 +48,12 @@
         <div class="container-sm text-center">
             <div class="row mb-4 justify-content-md-center">
 
-                @if ('NULL' !== $post->uploadArquivo)
-                    <a class="btn btn-lg btn-primary" href="{{ URL::to("storage/{$post->uploadArquivo}") }}" target="_blank"> Baixar Arquivo</a>
-                @else
-
+                @if (!empty($post->uploadArquivo))
+                    <a class="btn btn-lg btn-primary"
+                    href="{{ asset('storage/' . $post->uploadArquivo) }}"
+                    target="_blank" rel="noopener">
+                        Baixar Arquivo
+                    </a>
                 @endif
 
             </div>
@@ -78,8 +80,6 @@
                             <!-- Formulário de Comentários -->
                             <form action="{{ route('comment',$post->id) }}" method="post">
                                 @csrf
-                                {{--                                    <input type="hidden" name="post_id" value="{{$post->id}}">--}}
-
                                 @if(auth()->user())
                                     <div class="mb-3">
                                         <input type="hidden" class="form-control @error('name') is-invalid @enderror"
@@ -133,8 +133,7 @@
                                 @endif
 
                                 <div class="mb-3">
-                                    {{--                                    <label for="comment" class="form-label">Comentário</label>--}}
-                                    <textarea class="form-control @error('content') is-invalid @enderror""
+                                    <textarea class="form-control @error('content') is-invalid @enderror"
                                     name="content" rows="3"
                                     placeholder="Rápido, pense em algo para dizer!"></textarea>
 
@@ -163,7 +162,6 @@
             <h3>Comentários</h3>
             @if(session()->has('error_created_comment'))
                 <span>{{session()->get('error_created_comment')}}</span>
-                ))
             @endif
 
             @forelse($post->comments as $comment)

@@ -22,7 +22,7 @@
 
             <div class="mb-3">
                 <label class="form-label">Carregar Thumbnail do Post</label>
-                <input class="form-control @error('thumbnail') is-invalid @enderror" type="file" name="thumbnail" value="{{ old('thumbnail')}}">
+                <input class="form-control @error('thumbnail') is-invalid @enderror" type="file" accept="image/*" name="thumbnail" value="{{ old('thumbnail')}}">
                 <div class="invalid-feedback">
                     @error('thumbnail')
                     {{ $message }}

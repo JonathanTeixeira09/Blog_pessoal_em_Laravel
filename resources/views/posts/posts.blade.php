@@ -28,7 +28,7 @@
                                                                      alt="{{$post->title}}" width="700"
                                                                      height="350"/></a>
                         <div class="card-body">
-                            <div class="small text-muted">{{$post->created_at->format('F/y')}}</div>
+                            <div class="small text-muted">{{ $post->created_at->translatedFormat('d \d\e F \d\e Y') }}</div>
                             <h2 class="card-title h4">{{$post->title}}</h2>
                             <p class="card-text">{{Str::limit(html_entity_decode(strip_tags($post->content)), 50, '...') }}</p>
                             <p>
